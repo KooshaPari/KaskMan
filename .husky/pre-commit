@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔒 Running pre-commit security checks..."
+
+# 1. Run linting and formatting
+echo "📝 Running ESLint and Prettier..."
+npm run lint:fix || exit 1
+
+# 2. Check for secrets in staged files
+echo "🔍 Scanning for secrets..."
+git diff --cached --name-only | xargs grep -l -i "password\|secret\|key\|token" | while read file; do
+  if [[ "$file" != *".env.example"* ]] && [[ "$file" != *"test"* ]] && [[ "$file" != *"README"* ]] && [[ "$file" != *"docker-compose"* ]]; then
+    echo "⚠️  Potential secret found in: $file"
+    echo "Please review and ensure no real secrets are committed."
+    exit 1
+  fi
+done
+
+# 3. Check for common API key patterns
+echo "🔑 Checking for API key patterns..."
+if git diff --cached | grep -E "(sk-[a-zA-Z0-9]{48}|pk_[a-zA-Z0-9]{24}|rk_[a-zA-Z0-9]{24}|xoxb-[0-9]{12}-[0-9]{12}-[a-zA-Z0-9]{24}|ghp_[a-zA-Z0-9]{36}|gho_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59})"; then
+  echo "❌ Real API keys detected! Commit blocked."
+  exit 1
+fi
+
+# 4. Run tests
+echo "🧪 Running tests..."
+npm run test:ci || exit 1
+
+# 5. Security audit
+echo "🛡️  Running security audit..."
+npm audit --audit-level=moderate || exit 1
+
+echo "✅ Pre-commit checks passed!"
