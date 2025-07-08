@@ -16,12 +16,15 @@ describe('ProjectManager', () => {
 
   afterEach(async () => {
     jest.clearAllMocks();
-    
+
     // Clean up any created project directories
     try {
       const projectsDir = projectManager.config.projectsDir;
-      const exists = await fs.access(projectsDir).then(() => true).catch(() => false);
-      
+      const exists = await fs
+        .access(projectsDir)
+        .then(() => true)
+        .catch(() => false);
+
       if (exists) {
         const entries = await fs.readdir(projectsDir, { withFileTypes: true });
         for (const entry of entries) {

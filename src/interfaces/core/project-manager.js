@@ -30,7 +30,7 @@ class ProjectManager extends EventEmitter {
     this.projects = new Map();
     this.runningProjects = new Map();
     this.templates = new Map();
-    
+
     // Add default template immediately for testing
     this.addDefaultTemplate();
   }

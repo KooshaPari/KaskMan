@@ -354,11 +354,18 @@ export class RnDCoordinator {
     console.log('🔄 Shutting down R&D Module');
     try {
       // Only persist data if the data store is initialized
-      if (this.modules.dataStore && this.modules.dataStore.state && this.modules.dataStore.state.initialized) {
+      if (
+        this.modules.dataStore &&
+        this.modules.dataStore.state &&
+        this.modules.dataStore.state.initialized
+      ) {
         await this.persistLearningData();
       }
     } catch (error) {
-      console.warn('Warning: Could not persist learning data during shutdown:', error.message);
+      console.warn(
+        'Warning: Could not persist learning data during shutdown:',
+        error.message
+      );
     }
     this.modules.patternRecognition.shutdown();
   }
