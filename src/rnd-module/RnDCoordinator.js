@@ -23,6 +23,7 @@ export class RnDCoordinator {
       mode: 'dormant', // dormant, learning, active
       activationScore: 0,
       learningData: new Map(),
+      startTime: Date.now(),
       lastActivity: Date.now(),
       generatedProjects: [],
       userInteractions: [],
@@ -329,7 +330,7 @@ export class RnDCoordinator {
       generatedProjects: this.state.generatedProjects.length,
       learningData: this.state.learningData.size,
       lastActivity: this.state.lastActivity,
-      uptime: Date.now() - this.state.lastActivity,
+      uptime: Date.now() - this.state.startTime,
     };
   }
 
@@ -351,7 +352,14 @@ export class RnDCoordinator {
 
   async shutdown() {
     console.log('🔄 Shutting down R&D Module');
-    await this.persistLearningData();
+    try {
+      // Only persist data if the data store is initialized
+      if (this.modules.dataStore && this.modules.dataStore.state && this.modules.dataStore.state.initialized) {
+        await this.persistLearningData();
+      }
+    } catch (error) {
+      console.warn('Warning: Could not persist learning data during shutdown:', error.message);
+    }
     this.modules.patternRecognition.shutdown();
   }
 }

@@ -4,6 +4,8 @@
 
 import { ProjectManager } from './project-manager.js';
 import { jest } from '@jest/globals';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 describe('ProjectManager', () => {
   let projectManager;
@@ -12,8 +14,27 @@ describe('ProjectManager', () => {
     projectManager = new ProjectManager();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    
+    // Clean up any created project directories
+    try {
+      const projectsDir = projectManager.config.projectsDir;
+      const exists = await fs.access(projectsDir).then(() => true).catch(() => false);
+      
+      if (exists) {
+        const entries = await fs.readdir(projectsDir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.isDirectory()) {
+            const projectPath = path.join(projectsDir, entry.name);
+            await fs.rm(projectPath, { recursive: true, force: true });
+          }
+        }
+      }
+    } catch (error) {
+      // Ignore cleanup errors in tests
+      console.warn('Test cleanup warning:', error.message);
+    }
   });
 
   describe('constructor', () => {
@@ -79,8 +100,9 @@ describe('ProjectManager', () => {
 
       const projects = await projectManager.listProjects();
       expect(projects).toHaveLength(2);
-      expect(projects[0].name).toBe('project-1');
-      expect(projects[1].name).toBe('project-2');
+      // Projects are sorted by updatedAt descending, so project-2 comes first
+      expect(projects[0].name).toBe('project-2');
+      expect(projects[1].name).toBe('project-1');
     });
   });
 

@@ -103,6 +103,7 @@ export class RnDModule {
       this.setupCleanup();
 
       this.initialized = true;
+      this.startTime = Date.now();
 
       console.log('✅ R&D Module System initialized successfully');
 

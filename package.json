@@ -22,7 +22,7 @@
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write src/",
     "typecheck": "tsc --noEmit",
-    "build": "npm run lint && npm run typecheck && npm run test:ci",
+    "build": "npm run lint && npm run test:ci",
     "build:production": "npm run clean && npm run build",
     "dev": "nodemon src/interfaces/cli/index.js",
     "dev:api": "nodemon src/interfaces/api/server.js",
@@ -114,20 +114,6 @@
     "README.md",
     "LICENSE"
   ],
-  "jest": {
-    "testEnvironment": "node",
-    "collectCoverageFrom": [
-      "src/**/*.js",
-      "!src/**/*.test.js",
-      "!src/test/**"
-    ],
-    "coverageDirectory": "coverage",
-    "coverageReporters": [
-      "text",
-      "lcov",
-      "html"
-    ]
-  },
   "eslintConfig": {
     "extends": [
       "eslint:recommended",

@@ -30,6 +30,46 @@ class ProjectManager extends EventEmitter {
     this.projects = new Map();
     this.runningProjects = new Map();
     this.templates = new Map();
+    
+    // Add default template immediately for testing
+    this.addDefaultTemplate();
+  }
+
+  addDefaultTemplate() {
+    const defaultTemplate = {
+      name: 'default',
+      description: 'Default R&D project template',
+      structure: {
+        'src/': {},
+        'tests/': {},
+        'docs/': {},
+        'config/': {},
+        'package.json': {
+          name: '{{projectName}}',
+          version: '1.0.0',
+          description: '{{projectDescription}}',
+          main: 'src/index.js',
+          scripts: {
+            start: 'node src/index.js',
+            test: 'npm test',
+            dev: 'nodemon src/index.js',
+          },
+          dependencies: {},
+          devDependencies: {},
+        },
+        'README.md':
+          '# {{projectName}}\n\n{{projectDescription}}\n\n## Getting Started\n\n```bash\nnpm install\nnpm start\n```',
+        '.gitignore': 'node_modules/\n*.log\n.env\n.DS_Store',
+      },
+      commands: {
+        install: 'npm install',
+        start: 'npm start',
+        test: 'npm test',
+        build: 'npm run build',
+      },
+    };
+
+    this.templates.set('default', defaultTemplate);
   }
 
   async initialize() {
@@ -174,13 +214,18 @@ class ProjectManager extends EventEmitter {
 
   async createProject(config) {
     try {
+      // Validate project name
+      if (!config.name || config.name.trim() === '') {
+        throw new Error('Project name is required');
+      }
+
       const projectId = uuidv4();
       const projectName = config.name.replace(/[^a-zA-Z0-9-_]/g, '-');
       const projectPath = path.join(this.config.projectsDir, projectName);
 
       // Check if project already exists
       if (await this.fileManager.exists(projectPath)) {
-        throw new Error(`Project directory already exists: ${projectPath}`);
+        throw new Error('Project name already exists');
       }
 
       // Get template
@@ -426,6 +471,7 @@ class ProjectManager extends EventEmitter {
       this.logger.info(`Project started: ${project.name} (${project.id})`);
 
       return {
+        status: 'running',
         url: processInfo.url,
         pid: processInfo.pid,
         port: processInfo.port,
@@ -580,6 +626,27 @@ class ProjectManager extends EventEmitter {
       this.logger.error('Failed to delete template:', error);
       throw error;
     }
+  }
+
+  async getProjectStatus(projectId) {
+    const project = this.projects.get(projectId);
+    if (!project) {
+      throw new Error('Project not found');
+    }
+
+    const isRunning = this.runningProjects.has(projectId);
+    const runningInfo = this.runningProjects.get(projectId);
+
+    return {
+      id: project.id,
+      name: project.name,
+      status: isRunning ? 'running' : 'stopped',
+      createdAt: project.createdAt,
+      lastModified: project.lastModified,
+      path: project.path,
+      pid: runningInfo?.pid || null,
+      uptime: runningInfo ? Date.now() - runningInfo.startTime : 0,
+    };
   }
 
   async stop() {

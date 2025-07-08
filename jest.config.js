@@ -3,8 +3,6 @@ export default {
   testEnvironment: 'node',
   
   // Module system
-  preset: 'es-modules',
-  extensionsToTreatAsEsm: ['.js'],
   
   // Transform configuration
   transform: {

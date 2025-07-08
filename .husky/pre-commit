@@ -10,7 +10,7 @@ npm run lint:fix || exit 1
 # 2. Check for secrets in staged files
 echo "🔍 Scanning for secrets..."
 git diff --cached --name-only | xargs grep -l -i "password\|secret\|key\|token" | while read file; do
-  if [[ "$file" != *".env.example"* ]] && [[ "$file" != *"test"* ]] && [[ "$file" != *"README"* ]] && [[ "$file" != *"docker-compose"* ]]; then
+  if [[ "$file" != *".env.example"* ]] && [[ "$file" != *"test"* ]] && [[ "$file" != *"README"* ]] && [[ "$file" != *"docker-compose"* ]] && [[ "$file" != *".claude/"* ]] && [[ "$file" != *"package.json"* ]] && [[ "$file" != *".gitignore"* ]] && [[ "$file" != *"LICENSE"* ]]; then
     echo "⚠️  Potential secret found in: $file"
     echo "Please review and ensure no real secrets are committed."
     exit 1

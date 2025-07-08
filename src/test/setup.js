@@ -31,11 +31,7 @@ process.env.REDIS_URL = 'redis://localhost:6379';
 global.delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Mock external dependencies
-jest.mock('nodemailer', () => ({
-  createTransport: jest.fn(() => ({
-    sendMail: jest.fn().mockResolvedValue({ messageId: 'test-message-id' }),
-  })),
-}));
+// Add mocks for external dependencies as needed
 
 // Setup and teardown
 beforeAll(() => {
