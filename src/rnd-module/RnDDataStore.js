@@ -89,7 +89,7 @@ export class RnDDataStore {
 
   async initializeFiles() {
     // Initialize empty files if they don't exist
-    for (const [key, filePath] of Object.entries(this.files)) {
+    for (const [, filePath] of Object.entries(this.files)) {
       try {
         await fs.access(filePath);
       } catch (error) {
@@ -917,8 +917,8 @@ export class RnDDataStore {
     }
 
     // Check for required fields
-    const requiredFields = ['timestamp', 'version'];
-    // Add more validation as needed
+    const requiredFields = ['timestamp', 'version']; // eslint-disable-line no-unused-vars
+    // TODO: Add validation logic for requiredFields
   }
 
   mergeData(existing, imported) {

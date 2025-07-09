@@ -420,7 +420,7 @@ export class ProjectIntegration {
     }));
   }
 
-  async identifyChallenges(project) {
+  async identifyChallenges(_project) {
     // Simulate challenge identification
     const challenges = [
       'Technical complexity higher than expected',
@@ -439,7 +439,7 @@ export class ProjectIntegration {
       }));
   }
 
-  async identifyImprovements(project) {
+  async identifyImprovements(_project) {
     // Simulate improvement identification
     const improvements = [
       'Better initial complexity estimation',
@@ -681,7 +681,7 @@ class JiraAdapter {
     };
   }
 
-  async approve(externalId) {
+  async approve(_externalId) {
     // Simulate approval process
     return {
       status: 'approved',
@@ -689,7 +689,7 @@ class JiraAdapter {
     };
   }
 
-  async getStatus(externalId) {
+  async getStatus(_externalId) {
     // Simulate status check
     const statuses = ['pending', 'in_progress', 'completed'];
     return {
@@ -719,7 +719,7 @@ ${projectData.technologies.join(', ')}
     `;
   }
 
-  async simulateApiCall(method, endpoint, data) {
+  async simulateApiCall(_method, _endpoint, _data) {
     // Simulate API call with random success/failure
     await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -728,7 +728,7 @@ ${projectData.technologies.join(', ')}
       return {
         key: `RND-${Math.floor(Math.random() * 1000)}`,
         id: Math.floor(Math.random() * 10000),
-        self: `${this.baseUrl}${endpoint}/${Math.floor(Math.random() * 10000)}`,
+        self: `${this.baseUrl}${_endpoint}/${Math.floor(Math.random() * 10000)}`,
       };
     } else {
       throw new Error('Jira API call failed');
@@ -764,7 +764,7 @@ class GitHubAdapter {
     };
   }
 
-  async approve(externalId) {
+  async approve(_externalId) {
     // Add approval label or comment
     return {
       status: 'approved',
@@ -772,7 +772,7 @@ class GitHubAdapter {
     };
   }
 
-  async getStatus(externalId) {
+  async getStatus(_externalId) {
     // Check issue status
     const statuses = ['open', 'in_progress', 'closed'];
     return {
@@ -804,7 +804,7 @@ ${projectData.successMetrics.map((metric) => `- ${metric}`).join('\n')}
     `;
   }
 
-  async simulateApiCall(method, endpoint, data) {
+  async simulateApiCall(_method, _endpoint, _data) {
     await new Promise((resolve) => setTimeout(resolve, 150));
 
     if (Math.random() > 0.05) {
@@ -843,7 +843,7 @@ class TrelloAdapter {
     };
   }
 
-  async approve(externalId) {
+  async approve(_externalId) {
     // Move card to approved list
     return {
       status: 'approved',
@@ -851,7 +851,7 @@ class TrelloAdapter {
     };
   }
 
-  async getStatus(externalId) {
+  async getStatus(_externalId) {
     const statuses = ['pending', 'in_progress', 'completed'];
     return {
       status: statuses[Math.floor(Math.random() * statuses.length)],
@@ -872,7 +872,7 @@ class TrelloAdapter {
     return lists[priority] || 'default-list';
   }
 
-  async simulateApiCall(method, endpoint, data) {
+  async simulateApiCall(_method, _endpoint, _data) {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     if (Math.random() > 0.05) {
@@ -891,17 +891,17 @@ class AsanaAdapter {
   constructor(config) {
     this.config = config;
   }
-  async submit(projectData) {
+  async submit(_projectData) {
     return {
       status: 'pending',
       externalId: 'asana-' + Date.now(),
       message: 'Asana task created',
     };
   }
-  async approve(externalId) {
+  async approve(_externalId) {
     return { status: 'approved', message: 'Asana task approved' };
   }
-  async getStatus(externalId) {
+  async getStatus(_externalId) {
     return { status: 'in_progress', progress: Math.random() * 100 };
   }
 }
@@ -910,17 +910,17 @@ class LinearAdapter {
   constructor(config) {
     this.config = config;
   }
-  async submit(projectData) {
+  async submit(_projectData) {
     return {
       status: 'pending',
       externalId: 'linear-' + Date.now(),
       message: 'Linear issue created',
     };
   }
-  async approve(externalId) {
+  async approve(_externalId) {
     return { status: 'approved', message: 'Linear issue approved' };
   }
-  async getStatus(externalId) {
+  async getStatus(_externalId) {
     return { status: 'in_progress', progress: Math.random() * 100 };
   }
 }
@@ -929,17 +929,17 @@ class NotionAdapter {
   constructor(config) {
     this.config = config;
   }
-  async submit(projectData) {
+  async submit(_projectData) {
     return {
       status: 'pending',
       externalId: 'notion-' + Date.now(),
       message: 'Notion page created',
     };
   }
-  async approve(externalId) {
+  async approve(_externalId) {
     return { status: 'approved', message: 'Notion page approved' };
   }
-  async getStatus(externalId) {
+  async getStatus(_externalId) {
     return { status: 'in_progress', progress: Math.random() * 100 };
   }
 }
@@ -951,7 +951,7 @@ class ClaudeFlowAdapter {
 
   async submit(projectData) {
     // Integrate with Claude Flow task system
-    const taskData = {
+    const _taskData = {
       title: projectData.title,
       description: projectData.description,
       type: 'rnd_generated',
@@ -968,11 +968,11 @@ class ClaudeFlowAdapter {
     };
   }
 
-  async approve(externalId) {
+  async approve(_externalId) {
     return { status: 'approved', message: 'Claude Flow task approved' };
   }
 
-  async getStatus(externalId) {
+  async getStatus(_externalId) {
     return { status: 'in_progress', progress: Math.random() * 100 };
   }
 }

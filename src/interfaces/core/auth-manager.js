@@ -210,7 +210,7 @@ class AuthManager extends EventEmitter {
       this.logger.info(`User created: ${user.username} (${user.id})`);
 
       // Return user without password
-      const { password: _password, ...userWithoutPassword } = user;
+      const { password: _, ...userWithoutPassword } = user; // eslint-disable-line no-unused-vars
       return userWithoutPassword;
     } catch (error) {
       this.logger.error('Failed to create user:', error);
@@ -496,7 +496,7 @@ class AuthManager extends EventEmitter {
   }
 
   sanitizeUser(user) {
-    const { password: _password, ...sanitizedUser } = user;
+    const { password: _, ...sanitizedUser } = user; // eslint-disable-line no-unused-vars
     return sanitizedUser;
   }
 

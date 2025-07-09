@@ -608,7 +608,8 @@ class AutomationProjectGenerator {
     };
   }
 
-  generateRequirements(opportunity) {
+  generateRequirements(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Analyze current workflow processes',
       'Identify automation opportunities',
@@ -619,7 +620,8 @@ class AutomationProjectGenerator {
     ];
   }
 
-  generateDeliverables(opportunity) {
+  generateDeliverables(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Workflow analysis report',
       'Automation tool/script',
@@ -629,7 +631,8 @@ class AutomationProjectGenerator {
     ];
   }
 
-  generateSuccessMetrics(opportunity) {
+  generateSuccessMetrics(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Time savings percentage',
       'Error reduction rate',
@@ -664,7 +667,8 @@ class OptimizationProjectGenerator {
     };
   }
 
-  generateRequirements(opportunity) {
+  generateRequirements(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Performance baseline analysis',
       'Bottleneck identification',
@@ -675,7 +679,8 @@ class OptimizationProjectGenerator {
     ];
   }
 
-  generateDeliverables(opportunity) {
+  generateDeliverables(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Performance analysis report',
       'Optimization implementation',
@@ -685,7 +690,8 @@ class OptimizationProjectGenerator {
     ];
   }
 
-  generateSuccessMetrics(opportunity) {
+  generateSuccessMetrics(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Performance improvement percentage',
       'Resource usage reduction',
@@ -721,7 +727,8 @@ class InnovationProjectGenerator {
     };
   }
 
-  generateRequirements(opportunity) {
+  generateRequirements(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Technology research and evaluation',
       'Proof of concept development',
@@ -732,7 +739,8 @@ class InnovationProjectGenerator {
     ];
   }
 
-  generateDeliverables(opportunity) {
+  generateDeliverables(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Technology evaluation report',
       'Proof of concept',
@@ -743,7 +751,8 @@ class InnovationProjectGenerator {
     ];
   }
 
-  generateSuccessMetrics(opportunity) {
+  generateSuccessMetrics(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Technology adoption rate',
       'Innovation impact score',
@@ -753,7 +762,8 @@ class InnovationProjectGenerator {
     ];
   }
 
-  generateRiskFactors(opportunity) {
+  generateRiskFactors(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Technology maturity risk',
       'Integration complexity risk',
@@ -788,7 +798,8 @@ class IntegrationProjectGenerator {
     };
   }
 
-  generateRequirements(opportunity) {
+  generateRequirements(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'System integration analysis',
       'API design and documentation',
@@ -799,7 +810,8 @@ class IntegrationProjectGenerator {
     ];
   }
 
-  generateDeliverables(opportunity) {
+  generateDeliverables(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Integration architecture document',
       'API specifications',
@@ -810,7 +822,8 @@ class IntegrationProjectGenerator {
     ];
   }
 
-  generateSuccessMetrics(opportunity) {
+  generateSuccessMetrics(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Integration success rate',
       'Data consistency score',
@@ -845,7 +858,8 @@ class MaintenanceProjectGenerator {
     };
   }
 
-  generateRequirements(opportunity) {
+  generateRequirements(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'System health assessment',
       'Maintenance planning',
@@ -856,7 +870,8 @@ class MaintenanceProjectGenerator {
     ];
   }
 
-  generateDeliverables(opportunity) {
+  generateDeliverables(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'System health report',
       'Maintenance plan',
@@ -867,7 +882,8 @@ class MaintenanceProjectGenerator {
     ];
   }
 
-  generateSuccessMetrics(opportunity) {
+  generateSuccessMetrics(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'System uptime percentage',
       'Security compliance score',
@@ -902,7 +918,8 @@ class ResearchProjectGenerator {
     };
   }
 
-  generateRequirements(opportunity) {
+  generateRequirements(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Research question definition',
       'Data collection and analysis',
@@ -913,7 +930,8 @@ class ResearchProjectGenerator {
     ];
   }
 
-  generateDeliverables(opportunity) {
+  generateDeliverables(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Research proposal',
       'Data collection methodology',
@@ -924,7 +942,8 @@ class ResearchProjectGenerator {
     ];
   }
 
-  generateSuccessMetrics(opportunity) {
+  generateSuccessMetrics(_opportunity) {
+    // eslint-disable-line no-unused-vars
     return [
       'Research question answered',
       'Data quality and completeness',
@@ -940,7 +959,8 @@ class ProjectScoringEngine {
     this.config = config;
   }
 
-  async score(suggestion, patterns, insights) {
+  async score(suggestion, patterns, _insights) {
+    // Use underscore to indicate unused parameter
     const breakdown = {
       impact: this.scoreImpact(suggestion),
       feasibility: this.scoreFeasibility(suggestion),
@@ -979,7 +999,8 @@ class ProjectScoringEngine {
     return (complexityScore + durationScore) / 2;
   }
 
-  scoreAlignment(suggestion, patterns) {
+  scoreAlignment(suggestion, _patterns) {
+    // Use underscore to indicate unused parameter
     // Score based on how well the suggestion aligns with identified patterns
     const sourceConfidence = suggestion.sourcePattern?.confidence || 0.5;
     const priorityScore =

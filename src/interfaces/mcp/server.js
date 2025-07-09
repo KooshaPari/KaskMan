@@ -713,7 +713,7 @@ class MCPServer {
       content: [
         {
           type: 'text',
-          text: `Project updated successfully`,
+          text: `Project updated successfully: ${project.name}`,
         },
       ],
     };

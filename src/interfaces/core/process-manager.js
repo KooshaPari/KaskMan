@@ -343,7 +343,7 @@ class ProcessManager extends EventEmitter {
   getRunningProjects() {
     const runningProjects = new Map();
 
-    for (const [_id, processInfo] of this.processes.entries()) {
+    for (const [, processInfo] of this.processes.entries()) {
       if (processInfo.status === 'running' && processInfo.projectId) {
         runningProjects.set(processInfo.projectId, processInfo);
       }

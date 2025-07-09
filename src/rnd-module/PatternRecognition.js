@@ -1109,6 +1109,7 @@ class TrendAnalyzer {
   }
 
   async buildUserNeedModels(_userPatterns) {
+    // eslint-disable-line no-unused-vars
     const models = [];
 
     const model = {
@@ -1126,6 +1127,7 @@ class TrendAnalyzer {
   }
 
   async buildSystemOptimizationModels(_systemPatterns) {
+    // eslint-disable-line no-unused-vars
     const models = [];
 
     const model = {
@@ -1142,7 +1144,8 @@ class TrendAnalyzer {
     return models;
   }
 
-  async buildProjectSuccessModels(projectPatterns) {
+  async buildProjectSuccessModels(_projectPatterns) {
+    // eslint-disable-line no-unused-vars
     const models = [];
 
     const model = {

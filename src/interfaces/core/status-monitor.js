@@ -269,22 +269,13 @@ class StatusMonitor extends EventEmitter {
   }
 
   async getDiskUsage() {
-    try {
-      // This is a simplified version - in production, use a proper disk usage library
-      return {
-        total: 100 * 1024 * 1024 * 1024, // 100GB placeholder
-        free: 50 * 1024 * 1024 * 1024, // 50GB placeholder
-        used: 50 * 1024 * 1024 * 1024, // 50GB placeholder
-        percentage: 50,
-      };
-    } catch (error) {
-      return {
-        total: 0,
-        free: 0,
-        used: 0,
-        percentage: 0,
-      };
-    }
+    // This is a simplified version - in production, use a proper disk usage library
+    return {
+      total: 100 * 1024 * 1024 * 1024, // 100GB placeholder
+      free: 50 * 1024 * 1024 * 1024, // 50GB placeholder
+      used: 50 * 1024 * 1024 * 1024, // 50GB placeholder
+      percentage: 50,
+    };
   }
 
   getNetworkInterfaces() {
@@ -322,17 +313,21 @@ class StatusMonitor extends EventEmitter {
   }
 
   async getProcessCPUUsage(_pid) {
+    // eslint-disable-line no-unused-vars
     try {
       // This is a simplified version - in production, use a proper process monitoring library
+      // TODO: Use _pid parameter to get actual process CPU usage
       return Math.random() * 20; // placeholder
     } catch (error) {
       return 0;
     }
   }
 
-  async getProcessMemoryUsage(pid) {
+  async getProcessMemoryUsage(_pid) {
+    // eslint-disable-line no-unused-vars
     try {
       // This is a simplified version - in production, use a proper process monitoring library
+      // TODO: Use _pid parameter to get actual process memory usage
       return {
         rss: Math.random() * 100 * 1024 * 1024, // placeholder
         heapTotal: Math.random() * 50 * 1024 * 1024, // placeholder

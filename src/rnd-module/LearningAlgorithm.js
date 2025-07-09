@@ -184,6 +184,7 @@ export class LearningAlgorithm {
     const highValueFeatures = features.filter((f) => f > 0.7).length;
     const lowValueFeatures = features.filter((f) => f < 0.3).length;
     const _midValueFeatures = features.filter(
+      // eslint-disable-line no-unused-vars
       (f) => f >= 0.3 && f <= 0.7
     ).length;
 
