@@ -1,0 +1,298 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18'
+  GO_VERSION: '1.21'
+
+# Cancel previous runs if new commits are pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Skip checks for draft PRs unless specifically requested
+  check-pr-status:
+    name: Check PR Status
+    runs-on: ubuntu-latest
+    outputs:
+      should-run: ${{ steps.check.outputs.should-run }}
+    steps:
+    - name: Check if should run
+      id: check
+      run: |
+        if [[ "${{ github.event.pull_request.draft }}" == "true" && "${{ github.event.action }}" != "ready_for_review" ]]; then
+          echo "should-run=false" >> $GITHUB_OUTPUT
+        else
+          echo "should-run=true" >> $GITHUB_OUTPUT
+        fi
+
+  # Fast feedback - linting and basic checks
+  quick-checks:
+    name: Quick Checks
+    runs-on: ubuntu-latest
+    needs: check-pr-status
+    if: needs.check-pr-status.outputs.should-run == 'true'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Check for merge conflicts
+      run: |
+        if git merge-tree $(git merge-base HEAD origin/main) HEAD origin/main | grep -q '<<<<<<<'; then
+          echo "❌ Merge conflicts detected"
+          exit 1
+        fi
+        echo "✅ No merge conflicts"
+        
+    - name: Check commit messages
+      run: |
+        # Check if commits follow conventional commit format
+        commits=$(git rev-list --no-merges origin/main..HEAD)
+        for commit in $commits; do
+          message=$(git log --format=%s -n 1 $commit)
+          if ! echo "$message" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?: .+'; then
+            echo "⚠️ Commit $commit does not follow conventional commit format: $message"
+          fi
+        done
+        
+    - name: Run ESLint with annotations
+      run: |
+        npm run lint -- --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
+        npm run lint
+        
+    - name: Upload ESLint results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: eslint-results.sarif
+      continue-on-error: true
+      
+    - name: Check for TODO/FIXME comments
+      run: |
+        todos=$(git diff origin/main --name-only | xargs grep -n "TODO\|FIXME\|XXX\|HACK" || true)
+        if [ ! -z "$todos" ]; then
+          echo "⚠️ New TODO/FIXME comments found:"
+          echo "$todos"
+        fi
+
+  # Code quality gates
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+    needs: [check-pr-status, quick-checks]
+    if: needs.check-pr-status.outputs.should-run == 'true'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GO_VERSION }}
+        
+    - name: Install Node.js dependencies
+      run: npm ci
+      
+    - name: Install Go dependencies (if Go module exists)
+      run: |
+        if [ -f "kodevibe-go/go.mod" ]; then
+          cd kodevibe-go && go mod download
+        fi
+        
+    - name: Run tests with coverage
+      run: npm test -- --coverage --passWithNoTests
+      
+    - name: Check test coverage
+      run: |
+        if [ -f "coverage/lcov.info" ]; then
+          coverage=$(npx nyc report --reporter=text-summary | grep "Lines" | awk '{print $3}' | sed 's/%//')
+          if (( $(echo "$coverage < 70" | bc -l) )); then
+            echo "❌ Test coverage is below 70%: ${coverage}%"
+            exit 1
+          fi
+          echo "✅ Test coverage: ${coverage}%"
+        else
+          echo "⚠️ No coverage report found"
+        fi
+        
+    - name: Run Go tests (if Go module exists)
+      run: |
+        if [ -f "kodevibe-go/go.mod" ]; then
+          cd kodevibe-go && go test -v -race ./...
+        fi
+        
+    - name: Check bundle size
+      run: |
+        npm run build
+        if [ -d "dist" ]; then
+          size=$(du -sh dist | cut -f1)
+          echo "📦 Bundle size: $size"
+          # Add bundle size check logic here if needed
+        fi
+        
+    - name: Dependency check
+      run: |
+        # Check for high severity vulnerabilities
+        npm audit --audit-level=high
+        
+    - name: License check
+      run: |
+        # Check for compatible licenses in dependencies
+        npx license-checker --onlyAllow "MIT;BSD;Apache;ISC;CC0;Unlicense" --excludePrivatePackages || true
+
+  # Security checks
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: [check-pr-status, quick-checks]
+    if: needs.check-pr-status.outputs.should-run == 'true'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Semgrep
+      uses: returntocorp/semgrep-action@v1
+      with:
+        config: >-
+          p/security-audit
+          p/secrets
+          p/ci
+          p/owasp-top-ten
+          p/javascript
+          p/typescript
+          p/go
+        generateSarif: "1"
+        
+    - name: Upload Semgrep results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: semgrep.sarif
+      continue-on-error: true
+      
+    - name: Secret scanning
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: origin/main
+        head: HEAD
+        extra_args: --debug --only-verified
+
+  # Performance checks
+  performance:
+    name: Performance Checks
+    runs-on: ubuntu-latest
+    needs: [check-pr-status, quality-gates]
+    if: needs.check-pr-status.outputs.should-run == 'true'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Performance benchmarks
+      run: |
+        # Add performance testing here
+        echo "⚡ Running performance checks..."
+        
+        # Check if application starts within reasonable time
+        timeout 30 npm start &
+        APP_PID=$!
+        sleep 5
+        
+        # Basic performance check
+        if curl -f http://localhost:3000/health >/dev/null 2>&1; then
+          echo "✅ Application starts successfully"
+        else
+          echo "❌ Application failed to start"
+          exit 1
+        fi
+        
+        kill $APP_PID 2>/dev/null || true
+      continue-on-error: true
+
+  # Final validation
+  pr-validation:
+    name: PR Validation Summary
+    runs-on: ubuntu-latest
+    needs: [quick-checks, quality-gates, security-scan, performance]
+    if: always() && needs.check-pr-status.outputs.should-run == 'true'
+    
+    steps:
+    - name: Check all jobs status
+      run: |
+        echo "## PR Validation Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Check job statuses
+        if [[ "${{ needs.quick-checks.result }}" == "success" ]]; then
+          echo "✅ Quick Checks: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Quick Checks: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ "${{ needs.quality-gates.result }}" == "success" ]]; then
+          echo "✅ Quality Gates: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Quality Gates: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ "${{ needs.security-scan.result }}" == "success" ]]; then
+          echo "✅ Security Scan: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️ Security Scan: Issues found" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ "${{ needs.performance.result }}" == "success" ]]; then
+          echo "✅ Performance: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️ Performance: Issues found" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        # Overall status
+        if [[ "${{ needs.quick-checks.result }}" == "success" && "${{ needs.quality-gates.result }}" == "success" ]]; then
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🎉 **PR is ready for review!**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔄 **PR needs attention before merge**" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
