@@ -1,6 +1,6 @@
 module github.com/kooshapari/kodevibe-go
 
-go 1.21
+go 1.23.0
 
 require (
 	github.com/google/uuid v1.4.0
@@ -10,7 +10,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
-	golang.org/x/sync v0.6.0
+	golang.org/x/sync v0.16.0
 	golang.org/x/time v0.5.0
 	gopkg.in/yaml.v3 v3.0.1
 )
