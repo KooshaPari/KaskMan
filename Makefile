@@ -4,8 +4,8 @@
 SERVER_BINARY=kaskmanager
 CLI_BINARY=kaskman
 BUILD_DIR=build
-SERVER_CMD_DIR=cmd/server
-CLI_CMD_DIR=cmd/cli
+SERVER_CMD_DIR=./cmd/server
+CLI_CMD_DIR=./cmd/cli
 LDFLAGS=-ldflags "-s -w"
 
 # Go variables

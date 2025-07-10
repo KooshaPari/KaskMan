@@ -1,33 +1,35 @@
 # KaskManager R&D Platform
 
-A persistent, always-on, self-improving utility and R&D platform designed for continuous research, development, and project management.
+A high-performance Research & Development management platform built in **Go**, designed for continuous research, development, and intelligent project management.
 
 ## 🚀 Features
 
-- **Always-On Operation**: Zero-downtime, continuous operation with hot-swappable components
-- **Self-Learning R&D Module**: Dormant-to-active progression with automatic project generation
-- **Multiple Interfaces**: CLI, REST API, MCP server, and web dashboard
-- **Real-Time Monitoring**: WebSocket-based status updates and monitoring
-- **Microservices Architecture**: Scalable, fault-tolerant design
-- **Advanced Security**: JWT authentication, rate limiting, CORS protection
+- **High-Performance Go Backend**: Built with Gin framework for maximum throughput
+- **Self-Learning R&D Module**: AI-driven pattern recognition and project generation
+- **Real-Time WebSockets**: Live dashboard updates and bidirectional communication
+- **Enterprise Architecture**: Microservices with GORM, PostgreSQL, and Redis
+- **Advanced Security**: JWT authentication, rate limiting, and comprehensive security scanning
+- **CLI & REST API**: Complete command-line interface and RESTful API
+- **Monitoring & Analytics**: Built-in metrics collection and system health monitoring
 
-## 📋 Architecture
+## 🏗️ Architecture
 
-The platform consists of several key components:
+### Core Components
 
-- **CLI Interface**: Command-line tools for project management and system control
-- **API Server**: RESTful API with WebSocket support for real-time features
-- **MCP Server**: Model Context Protocol server for Claude integration
-- **R&D Module**: Self-learning system with pattern recognition and project generation
-- **Dashboard**: Web-based and TUI interfaces for monitoring and management
+- **HTTP Server** (Gin) - High-performance web server and REST API
+- **WebSocket Hub** - Real-time bidirectional communication
+- **R&D Module** - Self-learning system with agent coordination
+- **Database Layer** (GORM + PostgreSQL) - Robust data persistence
+- **CLI Interface** (Cobra) - Command-line management tools
+- **Monitoring System** - Comprehensive metrics and health monitoring
 
 ## 🛠️ Installation
 
 ### Prerequisites
 
-- Node.js 18+
-- npm 9+
-- PostgreSQL 13+
+- **Go 1.22+** (recommended: Go 1.23)
+- **PostgreSQL 13+**
+- **Redis 6+** (optional, for caching)
 - Redis 6+
 
 ### Quick Start
@@ -40,7 +42,7 @@ cd KaskManager
 
 2. Install dependencies:
 ```bash
-npm install
+go mod download
 ```
 
 3. Set up environment variables:
@@ -49,14 +51,14 @@ cp .env.example .env
 # Edit .env with your configuration
 ```
 
-4. Initialize the database:
+4. Build the applications:
 ```bash
-npm run db:init
+make build
 ```
 
 5. Start the platform:
 ```bash
-npm start
+make run
 ```
 
 ## 🔧 Configuration
@@ -85,23 +87,22 @@ The R&D module can be configured with various parameters:
 ### CLI Commands
 
 ```bash
-# Authentication
-rd-platform auth login
-rd-platform auth status
+# Build and run CLI
+make build-cli
+./build/kaskman --help
 
-# Project Management
-rd-platform project create "My Project"
-rd-platform project list
-rd-platform project start <project-id>
-rd-platform project status <project-id>
+# Build and run server
+make build-server
+./build/kaskmanager
 
-# System Management
-rd-platform system status
-rd-platform system health
+# Development mode
+make dev-cli    # Run CLI in development
+make dev-server # Run server in development
 
-# Server Management
-rd-platform server start --port 8080
-rd-platform server stop
+# System management
+make test       # Run tests
+make lint       # Run linters
+make format     # Format code
 ```
 
 ### API Endpoints
@@ -120,8 +121,9 @@ The REST API provides comprehensive endpoints:
 The MCP server provides tools for Claude integration:
 
 ```bash
-# Start MCP server
-npm run start:mcp
+# Build and start MCP server
+make build-server
+./build/kaskmanager --mcp
 
 # Available tools: project_create, project_list, system_status, etc.
 ```
@@ -130,13 +132,16 @@ npm run start:mcp
 
 ```bash
 # Run all tests
-npm test
+make test
 
 # Run tests with coverage
-npm run test:coverage
+make test-coverage
 
-# Run tests in watch mode
-npm run test:watch
+# Run benchmarks
+make benchmark
+
+# Run security scan
+make security-scan
 ```
 
 ## 🔒 Security
@@ -173,11 +178,11 @@ The platform uses JWT-based authentication with:
 
 ### Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build production version
-- `npm run lint` - Run ESLint
-- `npm run format` - Format code with Prettier
-- `npm run typecheck` - TypeScript type checking
+- `make dev` - Start development server
+- `make build` - Build production version
+- `make lint` - Run Go linters
+- `make format` - Format Go code
+- `make tidy` - Tidy Go modules
 
 ### Development Workflow
 
@@ -200,10 +205,10 @@ The platform uses JWT-based authentication with:
 
 ```bash
 # Build image
-docker build -t rd-platform .
+make docker-build
 
 # Run container
-docker run -p 8080:8080 rd-platform
+make docker-run
 ```
 
 ### Kubernetes
@@ -261,8 +266,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🏆 Acknowledgments
 
 Built using modern technologies:
-- Node.js & Express
-- PostgreSQL & Redis
-- Socket.io for real-time features
+- Go 1.23 with Gin framework
+- PostgreSQL & Redis with GORM
+- WebSockets for real-time features
 - JWT for authentication
-- TypeScript for type safety
+- Cobra CLI framework
