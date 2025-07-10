@@ -885,7 +885,7 @@ git clone <repository-url>
 cd KaskMan
 
 # Install dependencies
-go mod tidy
+npm install
 
 # Build the CLI
 make build-cli
