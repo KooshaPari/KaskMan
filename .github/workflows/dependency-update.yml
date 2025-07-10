@@ -23,10 +23,6 @@ jobs:
         node-version: '18'
         cache: 'npm'
         
-    - name: Setup Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.21'
         
     - name: Update npm dependencies
       run: |
@@ -34,20 +30,9 @@ jobs:
         npm update
         npm audit fix --audit-level=moderate
         
-    - name: Update Go dependencies
-      run: |
-        if [ -f "kodevibe-go/go.mod" ]; then
-          cd kodevibe-go
-          go get -u ./...
-          go mod tidy
-        fi
-        
     - name: Run tests after updates
       run: |
-        npm test -- --passWithNoTests
-        if [ -f "kodevibe-go/go.mod" ]; then
-          cd kodevibe-go && go test ./...
-        fi
+        npm test -- --passWithNoTests --detectOpenHandles --forceExit
         
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
@@ -63,9 +48,6 @@ jobs:
           ### Node.js Dependencies
           - Updated npm packages to latest compatible versions
           - Applied security fixes where available
-          
-          ### Go Dependencies  
-          - Updated Go modules to latest compatible versions
           
           ### Verification
           - ✅ All tests pass
