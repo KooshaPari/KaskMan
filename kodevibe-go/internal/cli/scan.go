@@ -168,7 +168,7 @@ func runScan(cmd *cobra.Command, flags *scanFlags) error {
 
 	// Run analysis
 	start := time.Now()
-	allIssues := []models.Issue{}
+	allIssues = make([]models.Issue, 0)
 	checkerStats := make(map[string]int)
 
 	for _, checker := range selectedCheckers {
@@ -202,7 +202,7 @@ func runScan(cmd *cobra.Command, flags *scanFlags) error {
 	}
 
 	// Generate output
-	result := ScanResult{
+	cliResult := CliScanResult{
 		Issues:     sortedIssues,
 		Statistics: generateStatistics(uniqueFiles, allIssues, checkerStats),
 		Metadata: ScanMetadata{
@@ -215,7 +215,7 @@ func runScan(cmd *cobra.Command, flags *scanFlags) error {
 	}
 
 	// Output results
-	if err := outputResults(result, flags); err != nil {
+	if err := outputResults(cliResult, flags); err != nil {
 		return fmt.Errorf("failed to output results: %w", err)
 	}
 
@@ -227,8 +227,8 @@ func runScan(cmd *cobra.Command, flags *scanFlags) error {
 	return nil
 }
 
-// ScanResult represents the complete scan results
-type ScanResult struct {
+// CliScanResult represents the complete scan results for CLI
+type CliScanResult struct {
 	Issues     []models.Issue    `json:"issues" yaml:"issues"`
 	Statistics ScanStatistics   `json:"statistics" yaml:"statistics"`
 	Metadata   ScanMetadata     `json:"metadata" yaml:"metadata"`
@@ -316,7 +316,10 @@ func getSelectedCheckers(registry *vibes.Registry, checkers, excludeCheckers []s
 			continue
 		}
 
-		checker := registry.GetChecker(name)
+		checker, err := registry.GetChecker(models.VibeType(name))
+		if err != nil {
+			return nil, fmt.Errorf("checker '%s' not found: %w", name, err)
+		}
 		if checker == nil {
 			return nil, fmt.Errorf("checker '%s' not found", name)
 		}
@@ -422,7 +425,7 @@ func generateStatistics(files []string, issues []models.Issue, checkerStats map[
 	return stats
 }
 
-func outputResults(result ScanResult, flags *scanFlags) error {
+func outputResults(result CliScanResult, flags *scanFlags) error {
 	var writer *os.File = os.Stdout
 	var err error
 
@@ -452,13 +455,13 @@ func outputResults(result ScanResult, flags *scanFlags) error {
 	}
 }
 
-func outputJSON(writer *os.File, result ScanResult) error {
+func outputJSON(writer *os.File, result CliScanResult) error {
 	encoder := json.NewEncoder(writer)
 	encoder.SetIndent("", "  ")
 	return encoder.Encode(result)
 }
 
-func outputYAML(writer *os.File, result ScanResult) error {
+func outputYAML(writer *os.File, result CliScanResult) error {
 	encoder := yaml.NewEncoder(writer)
 	defer encoder.Close()
 	return encoder.Encode(result)
@@ -494,7 +497,7 @@ func outputCSV(writer *os.File, issues []models.Issue) error {
 	return nil
 }
 
-func outputTable(writer *os.File, result ScanResult) error {
+func outputTable(writer *os.File, result CliScanResult) error {
 	if !quiet {
 		// Print summary first
 		fmt.Fprintf(writer, "KodeVibe Scan Results\n")
@@ -575,7 +578,7 @@ func printDryRunResults(files []string, registry *vibes.Registry, flags *scanFla
 	}
 
 	fmt.Printf("Would use checkers:\n")
-	checkers := registry.GetCheckers()
+	checkers := registry.GetAllCheckers()
 	for _, checker := range checkers {
 		fmt.Printf("  %s - %s\n", checker.Name(), string(checker.Type()))
 	}

@@ -13,6 +13,7 @@ const (
 	SeverityWarning  SeverityLevel = "warning"
 	SeverityError    SeverityLevel = "error"
 	SeverityCritical SeverityLevel = "critical"
+	SeverityHint     SeverityLevel = "hint"
 )
 
 func (s SeverityLevel) String() string {

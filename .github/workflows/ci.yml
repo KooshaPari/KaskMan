@@ -40,7 +40,7 @@ jobs:
       continue-on-error: true  # TypeScript files don't exist yet
       
     - name: Run tests
-      run: npm test -- --coverage --passWithNoTests
+      run: npm test -- --coverage --passWithNoTests --detectOpenHandles --forceExit
       
     - name: Build application
       run: npm run build

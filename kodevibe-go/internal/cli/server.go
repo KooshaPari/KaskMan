@@ -78,7 +78,7 @@ func runServer(port int, host string, development, openBrowser bool) error {
 	}
 
 	if verbose {
-		checkers := registry.GetCheckers()
+		checkers := registry.GetAllCheckers()
 		fmt.Printf("Registered %d vibe checkers\n", len(checkers))
 	}
 
