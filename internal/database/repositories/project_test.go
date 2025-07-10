@@ -1,24 +1,12 @@
 package repositories
 
 import (
-	"context"
-	"fmt"
 	"testing"
-	"time"
 
-	"github.com/google/uuid"
-	"github.com/kooshapari/kaskmanager-rd-platform/internal/database/models"
-	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
 )
 
-// Config placeholder
-type Config struct {
-	Logger *logrus.Logger
-}
 
 // ProjectRepositoryTestSuite represents the test suite for ProjectRepository
 type ProjectRepositoryTestSuite struct {

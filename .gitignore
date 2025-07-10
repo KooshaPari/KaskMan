@@ -81,3 +81,7 @@ coverage/
 
 # Misc
 .nyc_output/
+# Build artifacts
+/cli
+/server
+build/

@@ -1,16 +1,8 @@
 package repositories
 
 import (
-	"context"
-	"fmt"
 	"testing"
-	"time"
 
-	"github.com/google/uuid"
-	"github.com/kooshapari/kaskmanager-rd-platform/internal/database/models"
-	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
 )
@@ -152,66 +144,3 @@ func TestUserRepositoryTestSuite(t *testing.T) {
 	suite.Run(t, new(UserRepositoryTestSuite))
 }
 
-// MockCacheManager is a mock implementation of CacheManager
-type MockCacheManager struct {
-	mock.Mock
-}
-
-func NewMockCacheManager() *MockCacheManager {
-	return &MockCacheManager{}
-}
-
-func (m *MockCacheManager) Get(ctx context.Context, key string, dest interface{}) error {
-	args := m.Called(ctx, key, dest)
-	return args.Error(0)
-}
-
-func (m *MockCacheManager) Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
-	args := m.Called(ctx, key, value, ttl)
-	return args.Error(0)
-}
-
-func (m *MockCacheManager) Delete(ctx context.Context, key string) error {
-	args := m.Called(ctx, key)
-	return args.Error(0)
-}
-
-func (m *MockCacheManager) Clear(ctx context.Context) error {
-	args := m.Called(ctx)
-	return args.Error(0)
-}
-
-func (m *MockCacheManager) Exists(ctx context.Context, key string) (bool, error) {
-	args := m.Called(ctx, key)
-	return args.Bool(0), args.Error(1)
-}
-
-func (m *MockCacheManager) Keys(ctx context.Context, pattern string) ([]string, error) {
-	args := m.Called(ctx, pattern)
-	return args.Get(0).([]string), args.Error(1)
-}
-
-func (m *MockCacheManager) TTL(ctx context.Context, key string) (time.Duration, error) {
-	args := m.Called(ctx, key)
-	return args.Get(0).(time.Duration), args.Error(1)
-}
-
-func (m *MockCacheManager) SetTTL(ctx context.Context, key string, ttl time.Duration) error {
-	args := m.Called(ctx, key, ttl)
-	return args.Error(0)
-}
-
-func (m *MockCacheManager) GetStats(ctx context.Context) (map[string]interface{}, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(map[string]interface{}), args.Error(1)
-}
-
-func (m *MockCacheManager) Health(ctx context.Context) error {
-	args := m.Called(ctx)
-	return args.Error(0)
-}
-
-func (m *MockCacheManager) Close() error {
-	args := m.Called()
-	return args.Error(0)
-}

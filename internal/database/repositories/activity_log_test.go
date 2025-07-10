@@ -1,16 +1,8 @@
 package repositories
 
 import (
-	"context"
-	"fmt"
 	"testing"
-	"time"
 
-	"github.com/google/uuid"
-	"github.com/kooshapari/kaskmanager-rd-platform/internal/database/models"
-	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
 )
@@ -18,19 +10,14 @@ import (
 // ActivityLogRepositoryTestSuite represents the test suite for ActivityLogRepository
 type ActivityLogRepositoryTestSuite struct {
 	suite.Suite
-	DB     *gorm.DB
-	Config *Config
-	repo   ActivityLogRepository
-	cache  *MockCacheManager
+	DB   *gorm.DB
+	repo ActivityLogRepository
 }
 
 // SetupTest sets up the test suite
 func (s *ActivityLogRepositoryTestSuite) SetupTest() {
-	// Create mock cache manager
-	s.cache = NewMockCacheManager()
-
 	// Create repository
-	s.repo = NewActivityLogRepository(s.DB, s.Config.Logger, s.cache)
+	s.repo = NewActivityLogRepository(s.DB)
 }
 
 // TestActivityLogRepository_Create tests activity log creation
