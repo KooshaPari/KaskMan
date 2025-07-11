@@ -55,10 +55,14 @@ type Project struct {
 	CreatedBy      uuid.UUID  `gorm:"type:uuid;not null" json:"created_by"`
 
 	// Relationships
-	Creator   User       `gorm:"references:ID" json:"creator,omitempty"`
-	Tasks     []Task     `gorm:"foreignKey:ProjectID" json:"tasks,omitempty"`
-	Proposals []Proposal `gorm:"foreignKey:ProjectID" json:"proposals,omitempty"`
-	Patterns  []Pattern  `gorm:"foreignKey:ProjectID" json:"patterns,omitempty"`
+	Creator           User                 `gorm:"references:ID" json:"creator,omitempty"`
+	Tasks             []Task               `gorm:"foreignKey:ProjectID" json:"tasks,omitempty"`
+	Proposals         []Proposal           `gorm:"foreignKey:ProjectID" json:"proposals,omitempty"`
+	Patterns          []Pattern            `gorm:"foreignKey:ProjectID" json:"patterns,omitempty"`
+	GitRepository     *GitRepository       `gorm:"foreignKey:ProjectID" json:"git_repository,omitempty"`
+	Assets            []ProjectAsset       `gorm:"foreignKey:ProjectID" json:"assets,omitempty"`
+	State             *ProjectState        `gorm:"foreignKey:ProjectID" json:"state,omitempty"`
+	WorkflowExecutions []WorkflowExecution `gorm:"foreignKey:ProjectID" json:"workflow_executions,omitempty"`
 }
 
 // Agent represents an AI agent in the system
@@ -191,13 +195,117 @@ type ActivityLog struct {
 	User *User `gorm:"references:ID" json:"user,omitempty"`
 }
 
+// GitRepository represents a git repository associated with a project
+type GitRepository struct {
+	BaseModel
+	ProjectID     uuid.UUID `gorm:"type:uuid;not null" json:"project_id"`
+	RepositoryURL string    `gorm:"not null" json:"repository_url"`
+	Branch        string    `gorm:"default:'main'" json:"branch"`
+	LastCommitSHA string    `json:"last_commit_sha"`
+	LastSyncAt    *time.Time `json:"last_sync_at"`
+	Status        string    `gorm:"default:'active'" json:"status"` // active, inactive, error
+	Credentials   string    `gorm:"type:jsonb" json:"-"`         // encrypted credentials
+	WebhookSecret string    `json:"-"`                            // webhook secret for auto-sync
+
+	// Relationships
+	Project *Project `gorm:"references:ID" json:"project,omitempty"`
+}
+
+// ProjectAsset represents assets (screenshots, videos, docs) for a project
+type ProjectAsset struct {
+	BaseModel
+	ProjectID   uuid.UUID `gorm:"type:uuid;not null" json:"project_id"`
+	AssetType   string    `gorm:"not null" json:"asset_type"` // screenshot, video, document, demo
+	Title       string    `gorm:"not null" json:"title"`
+	Description string    `gorm:"type:text" json:"description"`
+	FilePath    string    `gorm:"not null" json:"file_path"`
+	FileSize    int64     `gorm:"default:0" json:"file_size"`
+	MimeType    string    `json:"mime_type"`
+	Thumbnail   string    `json:"thumbnail"`
+	Metadata    string    `gorm:"type:jsonb" json:"metadata"` // resolution, duration, etc.
+	Tags        string    `json:"tags"`
+	IsPublic    bool      `gorm:"default:false" json:"is_public"`
+	ViewCount   int       `gorm:"default:0" json:"view_count"`
+	UploadedBy  uuid.UUID `gorm:"type:uuid;not null" json:"uploaded_by"`
+
+	// Relationships
+	Project  *Project `gorm:"references:ID" json:"project,omitempty"`
+	Uploader User     `gorm:"references:ID" json:"uploader,omitempty"`
+}
+
+// ProjectState represents the current state of a project (CI/CD, tests, etc.)
+type ProjectState struct {
+	BaseModel
+	ProjectID        uuid.UUID  `gorm:"type:uuid;not null" json:"project_id"`
+	BuildStatus      string     `gorm:"default:'unknown'" json:"build_status"`    // success, failure, pending, unknown
+	TestStatus       string     `gorm:"default:'unknown'" json:"test_status"`     // success, failure, pending, unknown
+	LintStatus       string     `gorm:"default:'unknown'" json:"lint_status"`     // success, failure, pending, unknown
+	SecurityStatus   string     `gorm:"default:'unknown'" json:"security_status"` // success, failure, pending, unknown
+	DeploymentStatus string     `gorm:"default:'unknown'" json:"deployment_status"` // success, failure, pending, unknown
+	Coverage         float64    `gorm:"default:0" json:"coverage"`
+	LastCheckAt      *time.Time `json:"last_check_at"`
+	CheckErrors      string     `gorm:"type:text" json:"check_errors"`
+	HealthScore      int        `gorm:"default:0" json:"health_score"` // 0-100
+	NextSteps        string     `gorm:"type:text" json:"next_steps"`
+	ReadmePath       string     `json:"readme_path"`
+	DemoURL          string     `json:"demo_url"`
+	DocumentationURL string     `json:"documentation_url"`
+
+	// Relationships
+	Project *Project `gorm:"references:ID" json:"project,omitempty"`
+}
+
+// WorkflowExecution represents automated workflow executions
+type WorkflowExecution struct {
+	BaseModel
+	ProjectID    uuid.UUID  `gorm:"type:uuid;not null" json:"project_id"`
+	WorkflowType string     `gorm:"not null" json:"workflow_type"` // asset_generation, state_check, deployment
+	TriggerType  string     `gorm:"not null" json:"trigger_type"`  // manual, scheduled, webhook, event
+	Status       string     `gorm:"default:'pending'" json:"status"` // pending, running, completed, failed
+	StartedAt    *time.Time `json:"started_at"`
+	CompletedAt  *time.Time `json:"completed_at"`
+	Duration     int        `gorm:"default:0" json:"duration"` // in seconds
+	Result       string     `gorm:"type:text" json:"result"`
+	ErrorMessage string     `gorm:"type:text" json:"error_message"`
+	Artifacts    string     `gorm:"type:jsonb" json:"artifacts"` // generated files, reports
+	Configuration string    `gorm:"type:jsonb" json:"configuration"`
+	TriggeredBy  uuid.UUID  `gorm:"type:uuid;not null" json:"triggered_by"`
+
+	// Relationships
+	Project   *Project `gorm:"references:ID" json:"project,omitempty"`
+	Triggerer User     `gorm:"references:ID" json:"triggerer,omitempty"`
+}
+
+// ProjectTemplate represents reusable project templates
+type ProjectTemplate struct {
+	BaseModel
+	Name         string    `gorm:"not null" json:"name"`
+	Description  string    `gorm:"type:text" json:"description"`
+	Category     string    `gorm:"not null" json:"category"`
+	ProjectType  string    `gorm:"not null" json:"project_type"`
+	Template     string    `gorm:"type:jsonb;not null" json:"template"` // project structure template
+	Workflows    string    `gorm:"type:jsonb" json:"workflows"`          // default workflows
+	IsPublic     bool      `gorm:"default:false" json:"is_public"`
+	UsageCount   int       `gorm:"default:0" json:"usage_count"`
+	Rating       float64   `gorm:"default:0" json:"rating"`
+	CreatedBy    uuid.UUID `gorm:"type:uuid;not null" json:"created_by"`
+
+	// Relationships
+	Creator User `gorm:"references:ID" json:"creator,omitempty"`
+}
+
 // TableName methods for custom table names (if needed)
-func (User) TableName() string         { return "users" }
-func (Project) TableName() string      { return "projects" }
-func (Agent) TableName() string        { return "agents" }
-func (Task) TableName() string         { return "tasks" }
-func (Proposal) TableName() string     { return "proposals" }
-func (Pattern) TableName() string      { return "patterns" }
-func (Insight) TableName() string      { return "insights" }
-func (SystemMetric) TableName() string { return "system_metrics" }
-func (ActivityLog) TableName() string  { return "activity_logs" }
+func (User) TableName() string                { return "users" }
+func (Project) TableName() string             { return "projects" }
+func (Agent) TableName() string               { return "agents" }
+func (Task) TableName() string                { return "tasks" }
+func (Proposal) TableName() string            { return "proposals" }
+func (Pattern) TableName() string             { return "patterns" }
+func (Insight) TableName() string             { return "insights" }
+func (SystemMetric) TableName() string        { return "system_metrics" }
+func (ActivityLog) TableName() string         { return "activity_logs" }
+func (GitRepository) TableName() string       { return "git_repositories" }
+func (ProjectAsset) TableName() string        { return "project_assets" }
+func (ProjectState) TableName() string        { return "project_states" }
+func (WorkflowExecution) TableName() string   { return "workflow_executions" }
+func (ProjectTemplate) TableName() string     { return "project_templates" }

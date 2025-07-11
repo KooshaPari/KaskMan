@@ -1,0 +1,282 @@
+{
+  "project_id": "clipboard-handler-seed",
+  "name": "ZSH Clipboard Image Handler",
+  "type": "autonomous_utility",
+  "learning_phase": "seed",
+  "version": "0.1.0-seed",
+  
+  "genesis": {
+    "friction_point_id": "command_repetition_clipboard_images",
+    "origin_description": "User repeatedly handling clipboard images manually in terminal workflow",
+    "detection_timestamp": "2025-07-10T17:02:24.308Z",
+    "hive_decision": "spawn_autonomous_utility",
+    "spawning_agents": ["queen", "researcher", "architect", "coder"]
+  },
+  
+  "current_capabilities": {
+    "core_functionality": [
+      "Detect clipboard image content",
+      "Store images in organized directory structure",
+      "Replace clipboard with filepath",
+      "ZSH terminal integration",
+      "Basic learning and usage tracking"
+    ],
+    "learning_features": [
+      "Usage pattern recognition",
+      "Performance metrics tracking",
+      "Error pattern analysis",
+      "User preference learning",
+      "Evolution trigger detection"
+    ],
+    "integration_points": [
+      "ZSH hooks and widgets",
+      "Clipboard utilities (pbpaste, xclip)",
+      "File system management",
+      "Learning data export"
+    ]
+  },
+  
+  "autonomous_learning": {
+    "learning_metrics": [
+      "usage_frequency",
+      "success_rate", 
+      "processing_time",
+      "user_satisfaction",
+      "error_patterns",
+      "friction_reduction"
+    ],
+    "evolution_triggers": {
+      "usage_threshold": 50,
+      "success_rate_threshold": 0.85,
+      "user_satisfaction_threshold": 0.8,
+      "performance_threshold": 0.9
+    },
+    "expansion_opportunities": [
+      "Multiple image format support",
+      "Cloud storage integration",
+      "Automatic image optimization",
+      "AI-powered image tagging",
+      "Cross-platform compatibility",
+      "Team collaboration features"
+    ]
+  },
+  
+  "evolution_roadmap": {
+    "phase_1_seed": {
+      "status": "active",
+      "goals": [
+        "Basic functionality implementation",
+        "Learning system integration",
+        "User adoption and feedback"
+      ],
+      "success_criteria": [
+        "50+ successful uses",
+        "85%+ success rate",
+        "Positive user feedback"
+      ]
+    },
+    "phase_2_growth": {
+      "status": "planned",
+      "triggers": ["usage_threshold_met", "performance_excellence"],
+      "goals": [
+        "Enhanced format support",
+        "Performance optimization",
+        "User preference adaptation",
+        "Intelligent file organization"
+      ],
+      "new_capabilities": [
+        "Smart image compression",
+        "Duplicate detection",
+        "Batch processing",
+        "Custom naming strategies"
+      ]
+    },
+    "phase_3_expansion": {
+      "status": "planned",
+      "triggers": ["user_satisfaction_high", "expansion_demand"],
+      "goals": [
+        "Cloud integration",
+        "Team collaboration",
+        "AI-powered features",
+        "Cross-platform support"
+      ],
+      "new_capabilities": [
+        "Cloud storage backends",
+        "Shared clipboard spaces",
+        "Automatic image tagging",
+        "Windows/Linux support"
+      ]
+    },
+    "phase_4_autonomous": {
+      "status": "future",
+      "triggers": ["ecosystem_integration", "innovation_threshold"],
+      "goals": [
+        "Self-directed improvement",
+        "Autonomous feature development", 
+        "Ecosystem integration",
+        "New tool spawning"
+      ],
+      "autonomous_capabilities": [
+        "Feature gap detection",
+        "Automatic implementation",
+        "Performance self-optimization",
+        "Related tool spawning"
+      ]
+    }
+  },
+  
+  "integration_architecture": {
+    "kaskman_core": {
+      "learning_engine": "Reports usage and performance data",
+      "friction_detector": "Receives friction point analysis", 
+      "hive_coordinator": "Coordinates with agent swarm",
+      "pattern_analyzer": "Provides pattern recognition insights"
+    },
+    "claude_flow_2_0": {
+      "mcp_tools": [
+        "pattern_recognize",
+        "memory_store", 
+        "neural_train",
+        "swarm_coordinate"
+      ],
+      "agent_coordination": "Participates in hive mind decisions",
+      "learning_integration": "Feeds data to collective intelligence"
+    },
+    "user_environment": {
+      "zsh_integration": "Native shell integration",
+      "clipboard_system": "Platform-specific clipboard access",
+      "file_system": "Organized storage management",
+      "terminal_workflow": "Seamless workflow integration"
+    }
+  },
+  
+  "learning_data_schema": {
+    "performance_metrics": {
+      "total_uses": "integer",
+      "success_rate": "float",
+      "average_processing_time": "float",
+      "user_satisfaction": "float",
+      "error_count": "integer"
+    },
+    "usage_patterns": {
+      "hourly_distribution": "object",
+      "daily_distribution": "object", 
+      "session_patterns": "array",
+      "command_contexts": "object"
+    },
+    "user_preferences": {
+      "preferred_formats": "array",
+      "storage_patterns": "object",
+      "naming_preferences": "object",
+      "optimization_settings": "object"
+    },
+    "evolution_history": {
+      "phase_transitions": "array",
+      "capability_additions": "array",
+      "performance_improvements": "array",
+      "user_feedback": "array"
+    }
+  },
+  
+  "spawning_potential": {
+    "related_utilities": [
+      {
+        "name": "terminal-file-manager",
+        "trigger": "file_management_friction",
+        "description": "Enhanced file operations for terminal workflow"
+      },
+      {
+        "name": "smart-command-completer", 
+        "trigger": "command_repetition_patterns",
+        "description": "AI-powered command completion and optimization"
+      },
+      {
+        "name": "workflow-automation-engine",
+        "trigger": "complex_workflow_patterns",
+        "description": "Autonomous workflow optimization and automation"
+      }
+    ],
+    "framework_evolution": [
+      {
+        "name": "autonomous-utility-framework",
+        "trigger": "multiple_successful_utilities",
+        "description": "Framework for spawning and managing autonomous utilities"
+      },
+      {
+        "name": "terminal-intelligence-layer",
+        "trigger": "terminal_optimization_opportunities", 
+        "description": "Intelligent layer for terminal workflow enhancement"
+      }
+    ]
+  },
+  
+  "success_indicators": {
+    "immediate": [
+      "Successful image detection and storage",
+      "Smooth ZSH integration",
+      "User adoption > 10 uses/week"
+    ],
+    "short_term": [
+      "Evolution trigger activation",
+      "Performance metrics improvement",
+      "User workflow enhancement"
+    ],
+    "long_term": [
+      "Autonomous capability expansion",
+      "Related utility spawning",
+      "Ecosystem integration"
+    ]
+  },
+  
+  "research_contributions": {
+    "autonomous_learning": "Demonstrates learning from friction points",
+    "utility_evolution": "Shows organic capability expansion",
+    "hive_coordination": "Integrates with collective intelligence",
+    "user_workflow": "Enhances terminal productivity",
+    "spawning_patterns": "Establishes patterns for tool generation"
+  },
+  
+  "files": {
+    "zsh_clipboard_handler.py": {
+      "type": "core_implementation",
+      "purpose": "Main clipboard processing logic with learning",
+      "evolution_potential": "high"
+    },
+    "zsh_integration.zsh": {
+      "type": "environment_integration", 
+      "purpose": "ZSH shell integration and hooks",
+      "evolution_potential": "medium"
+    },
+    "project_manifest.json": {
+      "type": "project_metadata",
+      "purpose": "Project definition and evolution tracking",
+      "evolution_potential": "continuous"
+    }
+  },
+  
+  "next_actions": {
+    "immediate": [
+      "Deploy to user environment",
+      "Begin usage tracking", 
+      "Monitor for friction reduction"
+    ],
+    "ongoing": [
+      "Collect learning data",
+      "Analyze usage patterns",
+      "Monitor evolution triggers"
+    ],
+    "evolution_dependent": [
+      "Implement growth phase features",
+      "Expand capability set",
+      "Begin autonomous research"
+    ]
+  },
+  
+  "hive_mind_integration": {
+    "reporting_frequency": "daily",
+    "learning_sync": "real_time",
+    "evolution_consultation": "required",
+    "spawning_authority": "queen_approval",
+    "collective_memory": "enabled"
+  }
+}

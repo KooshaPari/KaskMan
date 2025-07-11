@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaskMan Project Chat - Claude Desktop Style</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-brain"></i> KaskMan</h2>
+                <div class="project-selector">
+                    <select id="projectSelect" onchange="switchProject()">
+                        <option value="">Select Project...</option>
+                        <option value="fintech-app">FinTech Mobile App</option>
+                        <option value="ecommerce-platform">E-commerce Platform</option>
+                        <option value="ai-assistant">AI Assistant</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <h4>Project Views</h4>
+                    <a href="#" class="nav-item active" onclick="switchView('overview')">
+                        <i class="fas fa-chart-pie"></i> Overview
+                    </a>
+                    <a href="#" class="nav-item" onclick="switchView('timeline')">
+                        <i class="fas fa-calendar-alt"></i> Timeline
+                    </a>
+                    <a href="#" class="nav-item" onclick="switchView('tasks')">
+                        <i class="fas fa-tasks"></i> Tasks
+                    </a>
+                    <a href="#" class="nav-item" onclick="switchView('risks')">
+                        <i class="fas fa-exclamation-triangle"></i> Risks
+                    </a>
+                    <a href="#" class="nav-item" onclick="switchView('resources')">
+                        <i class="fas fa-users"></i> Resources
+                    </a>
+                    <a href="#" class="nav-item" onclick="switchView('analytics')">
+                        <i class="fas fa-chart-line"></i> Analytics
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>Chat History</h4>
+                    <div class="chat-sessions" id="chatSessions">
+                        <div class="session-item active">
+                            <i class="fas fa-comment"></i>
+                            <span>Project Overview</span>
+                        </div>
+                        <div class="session-item">
+                            <i class="fas fa-comment"></i>
+                            <span>Timeline Review</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-content">
+            <div class="chat-header">
+                <h3 id="chatTitle">💬 Project Chat - Overview Mode</h3>
+                <div class="chat-controls">
+                    <button class="btn-secondary" onclick="clearChat()">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                    <button class="btn-secondary" onclick="exportChat()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <button class="btn-primary" onclick="toggleTUIMode()">
+                        <i class="fas fa-terminal"></i> TUI Mode
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-container" id="chatContainer">
+                <div class="messages" id="messagesContainer">
+                    <!-- Welcome message -->
+                    <div class="message assistant">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="sender">KaskMan AI</span>
+                                <span class="timestamp">Just now</span>
+                            </div>
+                            <div class="message-body">
+                                <h3>👋 Welcome to Project Chat!</h3>
+                                <p>I'm your AI project assistant. I can help you with:</p>
+                                <ul>
+                                    <li>📊 <strong>Project Overview</strong> - Current status, progress, and health</li>
+                                    <li>📅 <strong>Timeline Management</strong> - Milestones, deadlines, and optimization</li>
+                                    <li>✅ <strong>Task Management</strong> - Create, assign, and track tasks</li>
+                                    <li>⚠️ <strong>Risk Analysis</strong> - Identify and mitigate project risks</li>
+                                    <li>👥 <strong>Team Coordination</strong> - Resource allocation and performance</li>
+                                    <li>📈 <strong>Performance Insights</strong> - Analytics and recommendations</li>
+                                </ul>
+                                <p>What would you like to explore first?</p>
+                            </div>
+                            <div class="quick-actions">
+                                <button class="action-btn" onclick="sendQuickAction('project_overview')">
+                                    📊 Project Overview
+                                </button>
+                                <button class="action-btn" onclick="sendQuickAction('timeline_view')">
+                                    📅 Timeline
+                                </button>
+                                <button class="action-btn" onclick="sendQuickAction('task_status')">
+                                    ✅ Tasks
+                                </button>
+                                <button class="action-btn" onclick="sendQuickAction('risk_check')">
+                                    ⚠️ Risks
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <textarea id="messageInput" placeholder="Ask about your project..." rows="1" 
+                                onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
+                        <button id="sendButton" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="input-footer">
+                        <div class="suggested-questions" id="suggestedQuestions">
+                            <span class="suggestion" onclick="setSuggestion('What are the biggest risks right now?')">
+                                What are the biggest risks right now?
+                            </span>
+                            <span class="suggestion" onclick="setSuggestion('How is the team performing?')">
+                                How is the team performing?
+                            </span>
+                            <span class="suggestion" onclick="setSuggestion('Are we on track for the deadline?')">
+                                Are we on track for the deadline?
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TUI Panel (toggleable) -->
+        <div class="tui-panel" id="tuiPanel" style="display: none;">
+            <div class="tui-header">
+                <h4><i class="fas fa-terminal"></i> TUI Components</h4>
+                <button onclick="toggleTUIMode()" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tui-content" id="tuiContent">
+                <!-- TUI components will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-brain fa-spin"></i>
+            <p>AI is thinking...</p>
+        </div>
+    </div>
+
+    <script src="chat.js"></script>
+</body>
+</html>

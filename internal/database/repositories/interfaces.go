@@ -243,6 +243,102 @@ type InsightRepository interface {
 	GetInsightEffectiveness(ctx context.Context, insightID uuid.UUID) (map[string]interface{}, error)
 }
 
+// GitRepositoryRepository defines git repository-specific operations
+type GitRepositoryRepository interface {
+	BaseRepository
+	GetByProjectID(ctx context.Context, projectID uuid.UUID) (*models.GitRepository, error)
+	GetByRepositoryURL(ctx context.Context, repositoryURL string) (*models.GitRepository, error)
+	GetByStatus(ctx context.Context, status string, pagination Pagination) (*PaginationResult, error)
+	UpdateLastSync(ctx context.Context, gitRepoID uuid.UUID, commitSHA string) error
+	GetActiveRepositories(ctx context.Context) ([]models.GitRepository, error)
+	GetRepositoriesNeedingSync(ctx context.Context, lastSyncBefore time.Time) ([]models.GitRepository, error)
+	UpdateStatus(ctx context.Context, gitRepoID uuid.UUID, status string) error
+	GetRepositoryStatistics(ctx context.Context, gitRepoID uuid.UUID) (map[string]interface{}, error)
+}
+
+// ProjectAssetRepository defines project asset-specific operations
+type ProjectAssetRepository interface {
+	BaseRepository
+	GetByProjectID(ctx context.Context, projectID uuid.UUID) ([]models.ProjectAsset, error)
+	GetByProjectIDAndType(ctx context.Context, projectID uuid.UUID, assetType string) ([]models.ProjectAsset, error)
+	GetByType(ctx context.Context, assetType string, pagination Pagination) (*PaginationResult, error)
+	GetByUploader(ctx context.Context, uploaderID uuid.UUID, pagination Pagination) (*PaginationResult, error)
+	GetPublicAssets(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+	GetPrivateAssets(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+	GetByTags(ctx context.Context, tags []string, pagination Pagination) (*PaginationResult, error)
+	GetByDateRange(ctx context.Context, startDate, endDate time.Time, pagination Pagination) (*PaginationResult, error)
+	GetRecentAssets(ctx context.Context, limit int) ([]models.ProjectAsset, error)
+	GetLargeAssets(ctx context.Context, minSize int64, pagination Pagination) (*PaginationResult, error)
+	UpdateViewCount(ctx context.Context, assetID uuid.UUID) error
+	GetAssetStatistics(ctx context.Context, filters Filter) (map[string]interface{}, error)
+	SearchAssets(ctx context.Context, query string, pagination Pagination) (*PaginationResult, error)
+	GetAssetsByMimeType(ctx context.Context, mimeType string, pagination Pagination) (*PaginationResult, error)
+	GetOrphanedAssets(ctx context.Context) ([]models.ProjectAsset, error)
+	CleanupOrphanedAssets(ctx context.Context) error
+}
+
+// ProjectStateRepository defines project state-specific operations
+type ProjectStateRepository interface {
+	BaseRepository
+	GetByProjectID(ctx context.Context, projectID uuid.UUID) (*models.ProjectState, error)
+	GetByBuildStatus(ctx context.Context, buildStatus string, pagination Pagination) (*PaginationResult, error)
+	GetByTestStatus(ctx context.Context, testStatus string, pagination Pagination) (*PaginationResult, error)
+	GetByHealthScoreRange(ctx context.Context, minScore, maxScore int, pagination Pagination) (*PaginationResult, error)
+	GetHealthyProjects(ctx context.Context, minScore int, pagination Pagination) (*PaginationResult, error)
+	GetUnhealthyProjects(ctx context.Context, maxScore int, pagination Pagination) (*PaginationResult, error)
+	GetProjectsNeedingCheck(ctx context.Context, lastCheckBefore time.Time) ([]models.ProjectState, error)
+	GetProjectsWithFailingBuilds(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+	GetProjectsWithFailingTests(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+	GetProjectsWithSecurityIssues(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+	GetByCoverageRange(ctx context.Context, minCoverage, maxCoverage float64, pagination Pagination) (*PaginationResult, error)
+	UpdateHealthScore(ctx context.Context, projectID uuid.UUID, score int) error
+	UpdateLastCheck(ctx context.Context, projectID uuid.UUID) error
+	GetStateStatistics(ctx context.Context, filters Filter) (map[string]interface{}, error)
+	GetHealthTrends(ctx context.Context, period string) (map[string]interface{}, error)
+	GetProjectsWithReadme(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+	GetProjectsWithDemo(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+}
+
+// WorkflowExecutionRepository defines workflow execution-specific operations
+type WorkflowExecutionRepository interface {
+	BaseRepository
+	GetByProjectID(ctx context.Context, projectID uuid.UUID) ([]models.WorkflowExecution, error)
+	GetByWorkflowType(ctx context.Context, workflowType string, pagination Pagination) (*PaginationResult, error)
+	GetByStatus(ctx context.Context, status string, pagination Pagination) (*PaginationResult, error)
+	GetByTriggerType(ctx context.Context, triggerType string, pagination Pagination) (*PaginationResult, error)
+	GetByTriggerer(ctx context.Context, triggererID uuid.UUID, pagination Pagination) (*PaginationResult, error)
+	GetRunningExecutions(ctx context.Context) ([]models.WorkflowExecution, error)
+	GetPendingExecutions(ctx context.Context) ([]models.WorkflowExecution, error)
+	GetCompletedExecutions(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+	GetFailedExecutions(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+	GetByDateRange(ctx context.Context, startDate, endDate time.Time, pagination Pagination) (*PaginationResult, error)
+	GetRecentExecutions(ctx context.Context, limit int) ([]models.WorkflowExecution, error)
+	GetExecutionStatistics(ctx context.Context, filters Filter) (map[string]interface{}, error)
+	GetExecutionTrends(ctx context.Context, period string) (map[string]interface{}, error)
+	GetLongRunningExecutions(ctx context.Context, duration time.Duration) ([]models.WorkflowExecution, error)
+	GetExecutionsByDuration(ctx context.Context, minDuration, maxDuration int, pagination Pagination) (*PaginationResult, error)
+	CleanupCompletedExecutions(ctx context.Context, olderThan time.Time) error
+	CancelRunningExecutions(ctx context.Context, projectID uuid.UUID) error
+}
+
+// ProjectTemplateRepository defines project template-specific operations
+type ProjectTemplateRepository interface {
+	BaseRepository
+	GetByCategory(ctx context.Context, category string, pagination Pagination) (*PaginationResult, error)
+	GetByCreator(ctx context.Context, creatorID uuid.UUID, pagination Pagination) (*PaginationResult, error)
+	GetPublicTemplates(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+	GetPrivateTemplates(ctx context.Context, pagination Pagination) (*PaginationResult, error)
+	GetByProjectType(ctx context.Context, projectType string, pagination Pagination) (*PaginationResult, error)
+	GetPopularTemplates(ctx context.Context, limit int) ([]models.ProjectTemplate, error)
+	GetRecentTemplates(ctx context.Context, limit int) ([]models.ProjectTemplate, error)
+	GetByRatingRange(ctx context.Context, minRating, maxRating float64, pagination Pagination) (*PaginationResult, error)
+	IncrementUsageCount(ctx context.Context, templateID uuid.UUID) error
+	UpdateRating(ctx context.Context, templateID uuid.UUID, rating float64) error
+	SearchTemplates(ctx context.Context, query string, pagination Pagination) (*PaginationResult, error)
+	GetTemplateStatistics(ctx context.Context, templateID uuid.UUID) (map[string]interface{}, error)
+	GetTemplateUsageTrends(ctx context.Context, period string) (map[string]interface{}, error)
+}
+
 // RepositoryManager manages all repositories and provides transaction support
 type RepositoryManager interface {
 	TransactionManager
@@ -256,6 +352,11 @@ type RepositoryManager interface {
 	ActivityLog() ActivityLogRepository
 	Pattern() PatternRepository
 	Insight() InsightRepository
+	GitRepository() GitRepositoryRepository
+	ProjectAsset() ProjectAssetRepository
+	ProjectState() ProjectStateRepository
+	WorkflowExecution() WorkflowExecutionRepository
+	ProjectTemplate() ProjectTemplateRepository
 
 	// Health and stats
 	Health() error
