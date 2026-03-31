@@ -258,6 +258,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Advanced analytics
 - [ ] CI/CD pipeline integration
 
+> **⚠️ DEVELOPMENT PAUSED** — See Composio's plugin architecture pattern for swappable components:
+> - Core + Provider Plugins (e.g., `@composio/core` + `@composio/openai`, `@composio/anthropic`)
+> - Tool registry with unified interface across providers
+> - Provider Protocol: AI backends are swappable via common interface
+> - When resuming: implement provider registry + tool/skill registry following Composio pattern
+> - Reference: `platforms/thegent` for existing hexagonal architecture patterns in the Phenotype ecosystem
+
 ## 🏆 Acknowledgments
 
 Built using modern technologies:
